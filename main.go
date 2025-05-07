@@ -2,24 +2,24 @@ package main
 
 import (
 	"github.com/julienschmidt/httprouter"
-	"golang-with-mongo/controller"
-	"golang-with-mongo/database"
+	"golang-with-mongo/config"
 	"golang-with-mongo/helper"
-	"golang-with-mongo/repository"
-	"golang-with-mongo/service"
+	"golang-with-mongo/internal/handler"
+	"golang-with-mongo/internal/repository"
+	"golang-with-mongo/internal/service"
 	"log"
 	"net/http"
 )
 
 func main() {
-	database.InitClient()
+	config.InitDatabase()
 
-	userRepository := repository.NewUserRepository(database.DB)
-	userService := service.NewUserService(userRepository)
-	userController := controller.NewUserController(userService)
+	newRepository := repository.NewRepository(config.DB)
+	newService := service.NewService(newRepository)
+	newHandler := handler.NewHandler(newService)
 
 	router := httprouter.New()
-	RegisterUserRoutes(router, userController)
+	RegisterUserRoutes(router, newHandler.UserHandler)
 
 	server := http.Server{
 		Addr:    "localhost:9090",
@@ -31,7 +31,7 @@ func main() {
 	helper.PanicIfError(err)
 }
 
-func RegisterUserRoutes(router *httprouter.Router, controller controller.UserController) {
+func RegisterUserRoutes(router *httprouter.Router, controller handler.UserHandler) {
 	const prefix = "/api/users"
 
 	router.POST(prefix, controller.Create)

@@ -1,4 +1,4 @@
-package database
+package config
 
 import (
 	"context"
@@ -14,7 +14,7 @@ const (
 
 var DB *mongo.Database
 
-func InitClient() {
+func InitDatabase() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

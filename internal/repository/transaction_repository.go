@@ -4,14 +4,18 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"golang-with-mongo/model"
+	"golang-with-mongo/internal/model"
 )
+
+type TransactionRepository interface {
+	SaveTransaction(ctx context.Context, transaction model.Transaction) (primitive.ObjectID, error)
+}
 
 type TransactionRepositoryImpl struct {
 	transactionCollection *mongo.Collection
 }
 
-func NewTransactionRepositoryImpl(database *mongo.Database) TransactionRepository {
+func NewTransactionRepository(database *mongo.Database) TransactionRepository {
 	return &TransactionRepositoryImpl{
 		transactionCollection: database.Collection("transaction"),
 	}

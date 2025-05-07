@@ -1,4 +1,4 @@
-package dto
+package payload
 
 type UserRequest struct {
 	Name string `json:"name"`

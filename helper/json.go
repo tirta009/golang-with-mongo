@@ -2,7 +2,7 @@ package helper
 
 import (
 	"encoding/json"
-	"golang-with-mongo/dto"
+	"golang-with-mongo/internal/payload"
 	"net/http"
 )
 
@@ -12,18 +12,11 @@ func ReadFromRequestBody(request *http.Request, result interface{}) {
 	PanicIfError(err)
 }
 
-func WriteToResponseBody(writer http.ResponseWriter, response interface{}) {
-	writer.Header().Add("Content-Type", "application/json")
-	encoder := json.NewEncoder(writer)
-	err := encoder.Encode(response)
-	PanicIfError(err)
-}
-
 func WriteErrorResponse(w http.ResponseWriter, code int, message string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 
-	response := dto.WebResponse{
+	response := payload.WebResponse{
 		Code:    code,
 		Status:  "error",
 		Message: message,
@@ -37,7 +30,7 @@ func WriteSuccessResponse(w http.ResponseWriter, code int, message string, data 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 
-	response := dto.WebResponse{
+	response := payload.WebResponse{
 		Code:    code,
 		Status:  "success",
 		Message: message,

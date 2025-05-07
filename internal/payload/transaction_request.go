@@ -1,4 +1,4 @@
-package dto
+package payload
 
 type TransactionRequest struct {
 	UserId          string          `json:"user_id"`

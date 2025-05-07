@@ -6,8 +6,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"golang-with-mongo/model"
+	"golang-with-mongo/internal/model"
 )
+
+type UserRepository interface {
+	Save(ctx context.Context, user model.User) (primitive.ObjectID, error)
+	Delete(ctx context.Context, id primitive.ObjectID) (bool, error)
+	FindByID(ctx context.Context, id primitive.ObjectID) (*model.User, error)
+	FindAll(ctx context.Context) ([]model.User, error)
+	Update(ctx context.Context, id primitive.ObjectID, user *model.User) (bool, error)
+}
 
 type UserRepositoryImpl struct {
 	userCollection *mongo.Collection

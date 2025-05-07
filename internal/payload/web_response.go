@@ -1,4 +1,4 @@
-package dto
+package payload
 
 type WebResponse struct {
 	Code    int         `json:"code"`

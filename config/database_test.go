@@ -1,4 +1,4 @@
-package database
+package config
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 
 func TestInitClient(t *testing.T) {
 
-	InitClient()
+	InitDatabase()
 	fmt.Println("Connected to MongoDB")
 
 }

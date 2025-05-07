@@ -3,11 +3,19 @@ package service
 import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"golang-with-mongo/dto"
 	"golang-with-mongo/helper"
-	"golang-with-mongo/model"
-	"golang-with-mongo/repository"
+	"golang-with-mongo/internal/model"
+	"golang-with-mongo/internal/payload"
+	"golang-with-mongo/internal/repository"
 )
+
+type UserService interface {
+	Create(ctx context.Context, userRequest payload.UserRequest) (primitive.ObjectID, *model.User)
+	Delete(ctx context.Context, id primitive.ObjectID) bool
+	FindByID(ctx context.Context, id primitive.ObjectID) *model.User
+	FindAll(ctx context.Context) []model.User
+	Update(ctx context.Context, id primitive.ObjectID, userRequest payload.UserRequest) (bool, *model.User)
+}
 
 type UserServiceImpl struct {
 	UserRepository repository.UserRepository
@@ -19,7 +27,7 @@ func NewUserService(userRepository repository.UserRepository) UserService {
 	}
 }
 
-func (service *UserServiceImpl) Create(ctx context.Context, userRequest dto.UserRequest) (primitive.ObjectID, *model.User) {
+func (service *UserServiceImpl) Create(ctx context.Context, userRequest payload.UserRequest) (primitive.ObjectID, *model.User) {
 
 	user := model.User{
 		Name: userRequest.Name,
@@ -67,7 +75,7 @@ func (service *UserServiceImpl) FindAll(ctx context.Context) []model.User {
 	return users
 }
 
-func (service *UserServiceImpl) Update(ctx context.Context, objectId primitive.ObjectID, userRequest dto.UserRequest) (bool, *model.User) {
+func (service *UserServiceImpl) Update(ctx context.Context, objectId primitive.ObjectID, userRequest payload.UserRequest) (bool, *model.User) {
 
 	user := service.FindByID(ctx, objectId)
 	if user == nil {
