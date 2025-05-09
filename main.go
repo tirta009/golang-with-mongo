@@ -20,6 +20,7 @@ func main() {
 
 	router := httprouter.New()
 	RegisterUserRoutes(router, newHandler.UserHandler)
+	RegisterTransactionRoutes(router, newHandler.TransactionHandler)
 
 	server := http.Server{
 		Addr:    "localhost:9090",
@@ -31,12 +32,20 @@ func main() {
 	helper.PanicIfError(err)
 }
 
-func RegisterUserRoutes(router *httprouter.Router, controller handler.UserHandler) {
+func RegisterUserRoutes(router *httprouter.Router, userHandler handler.UserHandler) {
 	const prefix = "/api/users"
 
-	router.POST(prefix, controller.Create)
-	router.GET(prefix+"/:id", controller.FindById)
-	router.GET(prefix, controller.FindAll)
-	router.DELETE(prefix+"/:id", controller.Delete)
-	router.PUT(prefix+"/:id", controller.Update)
+	router.POST(prefix, userHandler.Create)
+	router.GET(prefix+"/:id", userHandler.FindById)
+	router.GET(prefix, userHandler.FindAll)
+	router.DELETE(prefix+"/:id", userHandler.Delete)
+	router.PUT(prefix+"/:id", userHandler.Update)
+
+}
+
+func RegisterTransactionRoutes(router *httprouter.Router, transactionHandler handler.TransactionHandler) {
+	const prefix = "/api/transactions"
+
+	router.POST(prefix, transactionHandler.CreateTransaction)
+	router.GET(prefix+"/users", transactionHandler.FindTotalTransactions)
 }

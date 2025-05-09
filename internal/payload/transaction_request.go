@@ -1,10 +1,10 @@
 package payload
 
 type TransactionRequest struct {
-	UserId          string          `json:"user_id"`
-	TotalAmount     float64         `json:"total_amount"`
-	ProductRequest  ProductRequest  `json:"product_request"`
-	ShipmentRequest ShipmentRequest `json:"shipment_request"`
+	UserId          string           `json:"user_id"`
+	TotalAmount     float64          `json:"total_amount"`
+	ProductRequest  []ProductRequest `json:"product"`
+	ShipmentRequest ShipmentRequest  `json:"shipment"`
 }
 
 type ProductRequest struct {

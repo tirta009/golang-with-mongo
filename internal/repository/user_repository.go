@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang-with-mongo/internal/model"
+	"golang-with-mongo/internal/payload"
 )
 
 type UserRepository interface {
@@ -15,6 +16,7 @@ type UserRepository interface {
 	FindByID(ctx context.Context, id primitive.ObjectID) (*model.User, error)
 	FindAll(ctx context.Context) ([]model.User, error)
 	Update(ctx context.Context, id primitive.ObjectID, user *model.User) (bool, error)
+	FindTotalTransactions(ctx context.Context) ([]payload.UserTransaction, error)
 }
 
 type UserRepositoryImpl struct {
@@ -101,4 +103,67 @@ func (userRepository *UserRepositoryImpl) Update(ctx context.Context, id primiti
 	}
 	return updated.ModifiedCount > 0, nil
 
+}
+
+func (userRepository *UserRepositoryImpl) FindTotalTransactions(ctx context.Context) ([]payload.UserTransaction, error) {
+
+	/*
+		db.user.aggregate([
+		    {
+		        $lookup : {
+		            from : "transaction",
+		            localField : "_id",
+		            foreignField: "user_id",
+		            as : "transactions"
+		        }
+		    },
+		    {
+		        $project : {
+		            _id : 0,
+		            "userId" : "$_id",
+		            "userName" : "$name",
+		            totalTransaction : {$size : "$transactions"}
+		        }
+		    }
+		])
+	*/
+
+	var transactions []payload.UserTransaction
+
+	lookupStage := bson.D{
+		{"$lookup", bson.D{
+			{"from", "transaction"},
+			{"localField", "_id"},
+			{"foreignField", "user_id"},
+			{"as", "transactions"},
+		}},
+	}
+
+	projectStage := bson.D{
+		{"$project", bson.D{
+			{"_id", 0},
+			{"userId", "$_id"},
+			{"userName", "$name"},
+			{"totalTransactions", bson.D{
+				{"$size", "$transactions"},
+			}},
+		}},
+	}
+
+	cursor, errAgg := userRepository.userCollection.Aggregate(ctx, mongo.Pipeline{lookupStage, projectStage})
+	if errAgg != nil {
+		return nil, errAgg
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var request payload.UserTransaction
+		err := cursor.Decode(&request)
+		if err != nil {
+			return nil, err
+		}
+		transactions = append(transactions, request)
+	}
+
+	return transactions, nil
 }

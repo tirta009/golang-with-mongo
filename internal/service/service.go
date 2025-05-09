@@ -8,8 +8,12 @@ type Service struct {
 }
 
 func NewService(repository *repository.Repository) *Service {
+
+	userService := NewUserService(repository.UserRepository)
+	transactionService := NewTransactionService(repository.TransactionRepository, userService)
+
 	return &Service{
-		UserService:        NewUserService(repository.UserRepository),
-		TransactionService: NewTransactionService(repository.TransactionRepository),
+		UserService:        userService,
+		TransactionService: transactionService,
 	}
 }

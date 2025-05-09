@@ -34,7 +34,7 @@ func (userHandler *UserHandlerImpl) Create(writer http.ResponseWriter, request *
 
 	objectId, user := userHandler.UserService.Create(request.Context(), createUserRequest)
 
-	helper.WriteSuccessResponse(writer, http.StatusOK, "Successfully deleted with Id : "+objectId.Hex(), user)
+	helper.WriteSuccessResponse(writer, http.StatusOK, "Successfully created with Id : "+objectId.Hex(), user)
 
 }
 

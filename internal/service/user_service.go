@@ -15,6 +15,7 @@ type UserService interface {
 	FindByID(ctx context.Context, id primitive.ObjectID) *model.User
 	FindAll(ctx context.Context) []model.User
 	Update(ctx context.Context, id primitive.ObjectID, userRequest payload.UserRequest) (bool, *model.User)
+	FindTotalTransactions(ctx context.Context) []payload.UserTransaction
 }
 
 type UserServiceImpl struct {
@@ -90,4 +91,11 @@ func (service *UserServiceImpl) Update(ctx context.Context, objectId primitive.O
 
 	return update, user
 
+}
+
+func (service *UserServiceImpl) FindTotalTransactions(ctx context.Context) []payload.UserTransaction {
+	transactions, err := service.UserRepository.FindTotalTransactions(ctx)
+	helper.PanicIfError(err)
+
+	return transactions
 }
